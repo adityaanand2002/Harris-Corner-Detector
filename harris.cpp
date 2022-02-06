@@ -12,11 +12,11 @@ int max_thresh = 255;
 const char* source_window = "Source image";
 const char* corners_window = "Corners detected";
 
-void cornerHarris_demo( int, void* );
+void cornerHarris( int, void* );
 
 int main( int argc, char** argv )
 {
-    CommandLineParser parser( argc, argv, "{@input | building.jpg | input image}" );
+    CommandLineParser parser( argc, argv, "{@input | building.jpg | input image}" );        //Inputting source image
     src = imread(samples::findFile( parser.get<String>( "@input" ) ) );
     if ( src.empty() )
     {
@@ -24,31 +24,31 @@ int main( int argc, char** argv )
         cout << "Usage: " << argv[0] << " <Input image>" << endl;
         return -1;
     }
-    cvtColor( src, src_gray, COLOR_BGR2GRAY );
+    cvtColor( src, src_gray, COLOR_BGR2GRAY );                              //Converting input image to grayscale
 
     namedWindow( source_window );
     createTrackbar( "Threshold: ", source_window, &thresh, max_thresh, cornerHarris_demo );
     imshow( source_window, src );
 
-    cornerHarris_demo( 0, 0 );
+    cornerHarris( 0, 0 );
 
     waitKey();
     return 0;
 }
 
-void cornerHarris_demo( int, void* )
+void cornerHarris( int, void* )
 {
     int blockSize = 2;
     int apertureSize = 3;
     double k = 0.04;
 
-    Mat dst = Mat::zeros( src.size(), CV_32FC1 );
+    Mat dst = Mat::zeros( src.size(), CV_32FC1 );                   //Detects Corners
     cornerHarris( src_gray, dst, blockSize, apertureSize, k );
     Mat dst_norm, dst_norm_scaled;
     normalize( dst, dst_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat() );
     convertScaleAbs( dst_norm, dst_norm_scaled );
 
-    for( int i = 0; i < dst_norm.rows ; i++ )
+    for( int i = 0; i < dst_norm.rows ; i++ )                       //Draws circle at corners
     {
         for( int j = 0; j < dst_norm.cols; j++ )
         {
